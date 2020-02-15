@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WordBeater</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
+    <script
+      src="https://kit.fontawesome.com/28dabda529.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="./wordgame.css" />
+  </head>
+  <body class=" bg-dark">
+    <div class="overlay user-input d-none">
+      <div
+        class="container h-100 d-flex justify-content-center align-items-center flex-column"
+      >
+        <input
+          type="text"
+          class="form-control w-25 username-field"
+          placeholder="enter your username"
+          autofocus
+        />
+
+        <button class="btn btn-danger sumbit-user-btn my-3">submit</button>
+      </div>
+    </div>
+    <div class="overlay leaderboard d-none">
+      <div class="container">
+        <div class="row mt-5">
+          <div class="col-md-8 mx-auto">
+            <div class="text-center">
+              <img
+                src="./images/leaderboard.png"
+                alt=""
+                height="60"
+                width="60"
+              />
+            </div>
+            <h3 class="text-center">LeaderBoards</h3>
+            <table class="table table-striped text-center text-light mb-5">
+              <thead>
+                <tr>
+                  <th>
+                    id
+                  </th>
+                  <th>
+                    name
+                  </th>
+                  <th>
+                    rank
+                  </th>
+                  <th>
+                    score
+                  </th>
+                  <th>
+                    speed
+                  </th>
+                  <th>
+                    word typed
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- insert new records here... -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="row mb-5">
+          <div class="col-md-6 mx-auto text-right">
+            <button class="btn btn-success leaderboard-continue">
+              continue
+            </button>
+          </div>
+          <div class="col-md-6 mx-auto text-left leaderboard-reset">
+            <button class="btn btn-danger">reset score</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row bg-danger mb-5 mx-auto">
+      <div class="col-md-6 mx-auto">
+        <h2 class="text-center py-3">WordBeater</h2>
+      </div>
+    </div>
+    <div class="options position-absolute">
+      <div class="leaderboard-icon" title="leaderboard">
+        <i class="fas fa-medal"></i>
+      </div>
+      <div class="settings-icon" title="settings">
+        <i class="fas fa-cog"></i>
+      </div>
+    </div>
+    <div class="container text-light">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="text-center">
+            <button class="btn btn-success start-button">Start!</button>
+          </div>
+          <p class="text-center position-relative msg">
+            Type the given word within
+            <span class="text-success time-left position-relative">5</span>
+            seconds.
+          </p>
+          <h1 class="text-center word">
+            hello, <span class="display-user">guest</span>
+          </h1>
+          <div class="time-meter-container">
+            <div class="time-meter"></div>
+          </div>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="start typing..."
+            id="input-text"
+            disabled
+          />
+          <div class="text-center mt-3" id="message">press start to play!</div>
+          <div class="row mt-5">
+            <div class="col-md-6">
+              <p class="text-center">
+                Time left: <span class="time-left">5</span>
+              </p>
+            </div>
+            <div class="col-md-6">
+              <p class="text-center">Score: <span class="score">0</span></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="">
+              <div class="card card-body bg-danger">
+                <h5 class="text-center">Instructions</h5>
+                <p>
+                  Welcome to WordBeater! Type each word in the given amount of
+                  seconds to score.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="./wordgame2.js"></script>
+  </body>
+</html>

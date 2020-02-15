@@ -1,0 +1,83 @@
+.overlay {
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  /* min-height: 100vh;
+        min-width: 100vw; */
+  font-family: sans-serif;
+  font-weight: bold;
+  z-index: 2;
+}
+.overlay .container {
+  overflow-y: auto;
+}
+.table {
+  z-index: 3;
+}
+.time-meter-container {
+  position: relative;
+  height: 5px;
+  margin: 2px 0 7px;
+  width: auto;
+  background-color: white;
+  border-radius: 4px;
+}
+.time-meter {
+  position: absolute;
+  top: 0;
+  transition: all 0.5s;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: seagreen;
+}
+.options {
+  box-sizing: border-box;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 5px;
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 35px;
+  /* cursor: pointer; */
+}
+.options * {
+  transition: all 0.1s;
+  cursor: pointer;
+}
+.options *:hover {
+  transform: scale(1.1);
+}
+.bubble {
+  transition: all 0.1s;
+  opacity: 1;
+  animation-name: bubble-up;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
+}
+@keyframes bubble-up {
+  0% {
+    top: -100%;
+    opacity: 1;
+  }
+  50% {
+    top: -150%;
+    opacity: 0.5;
+  }
+  100% {
+    top: -200%;
+    opacity: 0;
+  }
+}
