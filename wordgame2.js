@@ -28,9 +28,18 @@ const inputOverlay = document.querySelector(".user-input");
 const leaderboardOverlay = document.querySelector(".leaderboard");
 // others
 let users = [];
+const options = document.querySelector(".options");
 let tbody = document.querySelector("tbody");
 const lbIcon = document.querySelector(".leaderboard-icon");
 const stIcon = document.querySelector(".settings-icon");
+const modes = document.querySelectorAll("[name='difficulty']");
+
+modes.forEach(mode => {
+  mode.addEventListener("change", () => {
+    console.log("works" + mode.value);
+    difficulty = parseInt(mode.value);
+  });
+});
 
 window.addEventListener("DOMContentLoaded", () => {
   //load data from the localStorage
@@ -71,6 +80,13 @@ lbIcon.addEventListener("click", () => {
   generateLB(users);
 });
 
+const menu = document.querySelector(".settings-menu");
+
+stIcon.addEventListener("click", e => {
+  e.target.style.transform += "rotate(90deg)";
+  menu.classList.toggle("show");
+});
+
 uname.addEventListener("keyup", e => {
   if (e.target.value.match(/^[\w]{3,}/)) {
     submitUser.removeAttribute("disabled");
@@ -95,9 +111,11 @@ const resetGlobals = () => {
   enteredWordsArr = [];
   uname.value = "";
   const trs = document.querySelectorAll("tbody tr");
-  trs.forEach(tr => {
-    tbody.removeChild(tr);
-  });
+  if (trs.length) {
+    trs.forEach(tr => {
+      tbody.removeChild(tr);
+    });
+  }
 };
 
 lbContinue.addEventListener("click", () => {
@@ -114,7 +132,6 @@ startButton.addEventListener("click", () => {
 const renderTimeMeter = (availableTime, totaltime) => {
   let d = (availableTime / totaltime) * 100;
   d = Math.floor(d);
-  console.log(d);
   if (d <= 40) timeMeter.style.backgroundColor = "firebrick";
   else timeMeter.style.backgroundColor = "seagreen";
   timeMeter.style.width = d + "%";
@@ -122,6 +139,7 @@ const renderTimeMeter = (availableTime, totaltime) => {
 
 submitUser.addEventListener("click", () => {
   inputOverlay.classList.add("d-none");
+  userDisplay.innerHTML = uname.value;
   startButton.setAttribute("disabled", "true");
   let countdown = 3;
   const timeout = setInterval(() => {
@@ -193,7 +211,9 @@ const praises = [
 
 const grabWord = limit => {
   startTime = timeElapsed;
-  const limits = wordArr.filter(word => word.length <= limit);
+  const limits = wordArr.filter(
+    word => word.length >= limit && word.length <= limit + 2
+  );
   let getWord;
   do {
     getWord = limits[Math.floor(Math.random() * limit)];
@@ -266,11 +286,12 @@ const init = () => {
   message.innerHTML = "Good Luck!";
   enteredWord.removeAttribute("disabled");
   enteredWord.setAttribute("autofocus", "true");
-  // startButton.setAttribute("disabled", "true");
+  options.setAttribute("disabled", "true");
+  options.style.display = "none";
   grabWord(difficulty);
   let t = setInterval(() => {
     if (time <= 0) {
-      // clearInterval(rt);
+      options.style.display = "block";
       timeMeter.style.width = 0 + "%";
       let utility = 0;
       getTime();

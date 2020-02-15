@@ -26,7 +26,9 @@
           autofocus
         />
 
-        <button class="btn btn-danger sumbit-user-btn my-3">submit</button>
+        <button class="btn btn-danger sumbit-user-btn my-3" disabled>
+          submit
+        </button>
       </div>
     </div>
     <div class="overlay leaderboard d-none">
@@ -88,12 +90,52 @@
         <h2 class="text-center py-3">WordBeater</h2>
       </div>
     </div>
+    <!-- sidebar options -->
     <div class="options position-absolute">
       <div class="leaderboard-icon" title="leaderboard">
         <i class="fas fa-medal"></i>
       </div>
-      <div class="settings-icon" title="settings">
+      <div class="settings-icon position-relative" title="settings">
         <i class="fas fa-cog"></i>
+      </div>
+      <div class="position-absolute settings-menu">
+        <div>
+          Difficulty:
+        </div>
+        <table>
+          <tr>
+            <td>
+              Easy
+            </td>
+            <td>
+              <input type="radio" name="difficulty" id="" checked value="3" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Normal
+            </td>
+            <td>
+              <input type="radio" name="difficulty" id="" value="5" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Hard
+            </td>
+            <td>
+              <input type="radio" name="difficulty" id="" value="7" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Extreme
+            </td>
+            <td>
+              <input type="radio" name="difficulty" id="" value="9" />
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
     <div class="container text-light">
