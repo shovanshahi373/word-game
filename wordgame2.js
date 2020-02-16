@@ -1,5 +1,5 @@
 //globals
-let difficulty = 3;
+let difficulty = 1;
 let score = 0;
 let time = 5000;
 let extraTime = 0;
@@ -8,51 +8,89 @@ let timeElapsed = 0;
 let completionTime;
 let startTime;
 let enteredWordsArr = [];
-// labels
+let users = [];
+let league;
+// labels & indicators
 const word = document.querySelector(".word");
-let timeDisplay = document.querySelectorAll(".time-left");
-let userDisplay = document.querySelector(".display-user");
-let scoreDisplay = document.querySelector(".score");
-let message = document.querySelector("#message");
-let timeMeter = document.querySelector(".time-meter");
+const timeDisplay = document.querySelectorAll(".time-left");
+const userDisplay = document.querySelector(".display-user");
+const scoreDisplay = document.querySelector(".score");
+const message = document.querySelector("#message");
+const timeMeter = document.querySelector(".time-meter");
 // inputs
-let uname = document.querySelector(".username-field");
-let enteredWord = document.querySelector("#input-text");
+const uname = document.querySelector(".username-field");
+const enteredWord = document.querySelector("#input-text");
 // buttons
-let submitUser = document.querySelector(".sumbit-user-btn");
+const submitUser = document.querySelector(".sumbit-user-btn");
 const startButton = document.querySelector(".start-button");
-let lbContinue = document.querySelector(".leaderboard-continue");
-let lbReset = document.querySelector(".leaderboard-reset");
+const lbContinue = document.querySelector(".leaderboard-continue");
+const lbReset = document.querySelector(".leaderboard-reset");
 // overlays
 const inputOverlay = document.querySelector(".user-input");
 const leaderboardOverlay = document.querySelector(".leaderboard");
-// others
-let users = [];
 const options = document.querySelector(".options");
-let tbody = document.querySelector("tbody");
+const menu = document.querySelector(".settings-menu");
+// others
+const tbody = document.querySelector("tbody");
 const lbIcon = document.querySelector(".leaderboard-icon");
 const stIcon = document.querySelector(".settings-icon");
 const modes = document.querySelectorAll("[name='difficulty']");
+const bubble = document.querySelector(".bubble");
+const target = document.querySelector(".msg");
+let MODE;
 
 modes.forEach(mode => {
   mode.addEventListener("change", () => {
-    console.log("works" + mode.value);
+    // console.log("works" + mode.value);
     difficulty = parseInt(mode.value);
+    getPlayersGroup();
+    MODE = getDifficultMode();
+    console.log(MODE);
   });
 });
 
+const getDifficultMode = () => {
+  switch (difficulty) {
+    case 1:
+      return "Easy";
+    case 3:
+      return "Normal";
+    case 5:
+      return "Hard";
+    case 9:
+      return "Extreme";
+    default:
+      return "an error has occured.";
+  }
+};
+
+const getPlayersGroup = () => {
+  users = [];
+  league = localStorage.getItem("USERS");
+  if (league) {
+    league = JSON.parse(league);
+    console.log(difficulty);
+    const item = league.find(e => e.difficulty == difficulty);
+    if (item) {
+      console.log("item found");
+      console.log({ ...item });
+      users = [...item.users];
+      console.log(users);
+    } else {
+      console.log("league exist but diff mode doesn't exist");
+      console.log(league);
+    }
+  } else {
+    console.log("league doesn't exist hence user group doesn't exist either");
+    users = [];
+    league = [];
+  }
+};
+
 window.addEventListener("DOMContentLoaded", () => {
   //load data from the localStorage
-  users = localStorage.getItem("USERS");
-  if (users) {
-    users = JSON.parse(users);
-  } else {
-    users = [];
-  }
+  getPlayersGroup();
 });
-
-const bubble = document.querySelector(".bubble");
-const target = document.querySelector(".msg");
 
 //dynamically create bubbles when extra time is accquired.
 const showExtraTimeBubble = () => {
@@ -77,10 +115,11 @@ const showExtraTimeBubble = () => {
 
 lbIcon.addEventListener("click", () => {
   leaderboardOverlay.classList.remove("d-none");
+  users.forEach(u => console.log(u));
   generateLB(users);
+  console.log("icon clicked " + [...users]);
+  console.log(users);
 });
-
-const menu = document.querySelector(".settings-menu");
 
 stIcon.addEventListener("click", e => {
   e.target.style.transform += "rotate(90deg)";
@@ -97,7 +136,6 @@ uname.addEventListener("keyup", e => {
 
 const resetGlobals = () => {
   time = 5000;
-  difficulty = 3;
   score = 0;
   extraTime = 0;
   enteredWord.value = "";
@@ -111,7 +149,7 @@ const resetGlobals = () => {
   enteredWordsArr = [];
   uname.value = "";
   const trs = document.querySelectorAll("tbody tr");
-  if (trs.length) {
+  if (trs && trs.length) {
     trs.forEach(tr => {
       tbody.removeChild(tr);
     });
@@ -148,6 +186,7 @@ submitUser.addEventListener("click", () => {
     if (countdown === 0) {
       message.innerHTML = "Good Luck!";
       clearInterval(timeout);
+      enteredWord.setAttribute("autofocus", "true");
     }
   }, 1000);
   setTimeout(() => {
@@ -209,29 +248,40 @@ const praises = [
   "Oh my Gawd!"
 ];
 
-const grabWord = limit => {
+const grabWord = () => {
   startTime = timeElapsed;
-  const limits = wordArr.filter(
-    word => word.length >= limit && word.length <= limit + 2
-  );
+  const limits = wordArr
+    .filter(word => word.length >= difficulty && word.length <= difficulty + 2)
+    .sort((a, b) => a.length - b.length);
+  // console.log(limits);
+
   let getWord;
   do {
-    getWord = limits[Math.floor(Math.random() * limit)];
+    getWord = limits[Math.floor(Math.random() * limits.length)];
   } while (getWord === undefined);
   word.innerHTML = getWord;
 };
 
-const updateScore = (difficulty, timeElapsed) => {
-  score += (difficulty + timeElapsed * 0.005) * 0.8;
-  scoreDisplay.innerHTML = Math.round(score);
+const updateScore = () => {
+  const delta =
+    difficulty *
+    word.innerHTML.length *
+    (1 / (completionTime - startTime)) *
+    900;
+  score += delta;
+  console.log(delta);
+  scoreDisplay.innerHTML = score.toFixed(2);
 };
 
-const updateTime = word => {
-  extraTime = (timeElapsed * 1000) / (time + word.length + 0.1 * timeElapsed);
+const updateTime = () => {
+  const duration = completionTime - startTime;
+  extraTime =
+    (timeElapsed * 1000) / (time + word.innerHTML.length + 0.1 * timeElapsed) +
+    (time + 0.5 * word.innerHTML.length) / (0.8 * duration);
+
   time += extraTime;
   showExtraTimeBubble();
   timeDisplay.forEach(disply => (disply.innerHTML = (time / 1000).toFixed(2)));
-  console.log("time-stamp:" + time);
   return time;
 };
 
@@ -267,7 +317,6 @@ const generateLB = users => {
     for (const i in u) {
       const td = document.createElement("td");
       if (title && i === "rank") {
-        console.log("please run");
         const img = document.createElement("img");
         img.setAttribute("src", `./images/${title}-medal.png`);
         img.setAttribute("height", "40");
@@ -288,9 +337,11 @@ const init = () => {
   enteredWord.setAttribute("autofocus", "true");
   options.setAttribute("disabled", "true");
   options.style.display = "none";
-  grabWord(difficulty);
+  grabWord();
   let t = setInterval(() => {
     if (time <= 0) {
+      const mode = [...modes].find(mode => mode.checked);
+      difficulty = parseInt(mode.value);
       options.style.display = "block";
       timeMeter.style.width = 0 + "%";
       let utility = 0;
@@ -307,15 +358,15 @@ const init = () => {
       const utilization = (utility / timeElapsed) * 100;
       timeElapsed = 0;
       const wordCount = enteredWordsArr.length;
+
       const user = {
-        id: (new Date().getTime() / 1000).toFixed(5).split(".")[1],
-        name: uname.value,
         rank: "-",
+        name: uname.value,
         score: score.toFixed(2),
         utilization: utilization.toFixed(2) + "%",
         words: wordCount
       };
-      if (users.length) {
+      if (league.length && users.length) {
         const prevUser = users.findIndex(usr => usr.name === uname.value);
         if (prevUser === -1) users.push(user);
         else {
@@ -327,19 +378,24 @@ const init = () => {
             user.rank = i + 1;
             return user;
           });
-
-        localStorage.setItem("USERS", JSON.stringify(users));
+        const index = league.findIndex(lg => lg.difficulty === difficulty);
+        if (index !== -1) {
+          league[index].users = users;
+        } else {
+          league.push({ difficulty, users });
+        }
+        localStorage.setItem("USERS", JSON.stringify(league));
         generateLB(users);
       } else {
         users.push(user);
-        localStorage.setItem("USERS", JSON.stringify(users));
+        league.push({ difficulty, users });
+        localStorage.setItem("USERS", JSON.stringify(league));
         generateLB(users);
       }
     } else {
       timeElapsed += 1;
       time -= 4;
       getTime();
-      // renderTimeMeter(time, timeStamp);
     }
   }, 1);
   let rtm = setInterval(() => {
@@ -350,12 +406,14 @@ const init = () => {
   }, 100);
 };
 
+const getLongestWord = arr => arr.sort((a, b) => b.length - a.length);
+
 enteredWord.addEventListener("keydown", e => {
   if (e.target.value && e.keyCode === 13) {
     if (MatchWord(word.innerHTML, e.target.value)) {
       completionTime = timeElapsed;
-      if (difficulty < wordArr.length - 1) {
-        difficulty += 0.3;
+      if (difficulty <= getLongestWord(wordArr)[0].length) {
+        difficulty += 0.2;
       }
       let eword = {
         id: "#" + (10 + Math.random() * 89).toFixed(7).split(".")[0],
@@ -365,9 +423,9 @@ enteredWord.addEventListener("keydown", e => {
       enteredWordsArr.push(eword);
       enteredWord.value = "";
       getPraise(praises);
-      updateScore(difficulty, timeElapsed);
-      timeStamp = updateTime(word.innerHTML);
-      grabWord(difficulty);
+      updateScore();
+      timeStamp = updateTime();
+      grabWord();
     }
   }
 });
