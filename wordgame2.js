@@ -10,6 +10,10 @@ let startTime;
 let enteredWordsArr = [];
 let users = [];
 let league;
+let remarks;
+let oldRecord;
+let MODE;
+let oldUserRank;
 // labels & indicators
 const word = document.querySelector(".word");
 const timeDisplay = document.querySelectorAll(".time-left");
@@ -17,6 +21,8 @@ const userDisplay = document.querySelector(".display-user");
 const scoreDisplay = document.querySelector(".score");
 const message = document.querySelector("#message");
 const timeMeter = document.querySelector(".time-meter");
+const remarklb = document.querySelector(".remarkLabel");
+const tier = document.querySelector(".tierLabel");
 // inputs
 const uname = document.querySelector(".username-field");
 const enteredWord = document.querySelector("#input-text");
@@ -37,7 +43,6 @@ const stIcon = document.querySelector(".settings-icon");
 const modes = document.querySelectorAll("[name='difficulty']");
 const bubble = document.querySelector(".bubble");
 const target = document.querySelector(".msg");
-let MODE;
 
 modes.forEach(mode => {
   mode.addEventListener("change", () => {
@@ -45,6 +50,7 @@ modes.forEach(mode => {
     difficulty = parseInt(mode.value);
     getPlayersGroup();
     MODE = getDifficultMode();
+    tier.innerHTML = MODE + " - Tier";
     console.log(MODE);
   });
 });
@@ -60,7 +66,7 @@ const getDifficultMode = () => {
     case 9:
       return "Extreme";
     default:
-      return "an error has occured.";
+      return "Unknown";
   }
 };
 
@@ -122,7 +128,7 @@ lbIcon.addEventListener("click", () => {
 });
 
 stIcon.addEventListener("click", e => {
-  e.target.style.transform += "rotate(90deg)";
+  e.target.classList.toggle("rotate-gear");
   menu.classList.toggle("show");
 });
 
@@ -135,6 +141,9 @@ uname.addEventListener("keyup", e => {
 });
 
 const resetGlobals = () => {
+  remarks = "";
+  remarklb.innerHTML = "";
+  oldRecord = "";
   time = 5000;
   score = 0;
   extraTime = 0;
@@ -186,7 +195,7 @@ submitUser.addEventListener("click", () => {
     if (countdown === 0) {
       message.innerHTML = "Good Luck!";
       clearInterval(timeout);
-      enteredWord.setAttribute("autofocus", "true");
+      enteredWord.focus();
     }
   }, 1000);
   setTimeout(() => {
@@ -304,30 +313,57 @@ const getPraise = arr => {
 };
 
 //dynamically generate tr elements for leaderboard
-const generateLB = users => {
+const generateLB = (users, oldRecord) => {
   users.forEach((u, pos) => {
     let title;
     if (pos === 0) title = "gold";
     if (pos === 1) title = "silver";
     if (pos === 2) title = "bronze";
     const tr = document.createElement("tr");
+    // tr.setAttribute("data-rank",pos + 1);
     if (u.name === uname.value) {
       tr.classList.add("bg-danger");
     }
     for (const i in u) {
+      if (i === "formerRank") {
+        continue;
+      }
       const td = document.createElement("td");
-      if (title && i === "rank") {
+      if (i === "ladder") {
+        const font = document.createElement("i");
+        if (u[i] === "promoted") {
+          font.classList.add("fas", "fa-sort-up", "fa-2x");
+          font.style.color = "green";
+        } else if (u[i] === "demoted") {
+          font.classList.add("fas", "fa-sort-down", "fa-2x");
+          font.style.color = "red";
+        } else if (u[i] === "neutral") {
+          font.classList.add("fas", "fa-arrows-alt-h", "fa-2x");
+          font.style.color = "orange";
+        }
+        td.appendChild(font);
+      } else if (title && i === "rank") {
         const img = document.createElement("img");
         img.setAttribute("src", `./images/${title}-medal.png`);
         img.setAttribute("height", "40");
         img.setAttribute("width", "40");
+        img.setAttribute("title", `${title} medal`);
         td.appendChild(img);
       } else {
         td.innerHTML = u[i];
       }
+      if (
+        oldRecord &&
+        i !== "rank" &&
+        i !== "ladder" &&
+        u.name === oldRecord.name
+      ) {
+        td.innerHTML += `<div style="font-size:12px;color:#ccc">${oldRecord[i]}</div>`;
+      }
       tr.appendChild(td);
-      tbody.appendChild(tr);
+      // tbody.appendChild(tr);
     }
+    tbody.appendChild(tr);
   });
 };
 
@@ -360,7 +396,9 @@ const init = () => {
       const wordCount = enteredWordsArr.length;
 
       const user = {
-        rank: "-",
+        ladder: "neutral",
+        formerRank: "", //neutral,promoted,demoted
+        rank: "",
         name: uname.value,
         score: score.toFixed(2),
         utilization: utilization.toFixed(2) + "%",
@@ -370,14 +408,33 @@ const init = () => {
         const prevUser = users.findIndex(usr => usr.name === uname.value);
         if (prevUser === -1) users.push(user);
         else {
-          +users[prevUser].score < +user.score ? users.push(user) : null;
+          user.formerRank = users[prevUser].rank;
+          if (+users[prevUser].score < +user.score) {
+            oldRecord = users[prevUser];
+            // previousRank = oldRecord.rank;
+            users[prevUser] = user;
+            remarks = "You secured a new high score! Congratulations.";
+            remarklb.innerHTML = remarks;
+          }
         }
         users = users
+          .map(user => {
+            if (user.name !== uname.value) user.formerRank = user.rank;
+            return user;
+          })
           .sort((u1, u2) => parseFloat(u2.score) - parseFloat(u1.score))
           .map((user, i) => {
             user.rank = i + 1;
+            if (user.formerRank) {
+              if (user.rank < user.formerRank) user.ladder = "promoted";
+              else if (user.rank > user.formerRank) user.ladder = "demoted";
+              else if (user.rank === user.formerRank) user.ladder = "neutral";
+            } else {
+              user.ladder = "neutral";
+            }
             return user;
           });
+
         const index = league.findIndex(lg => lg.difficulty === difficulty);
         if (index !== -1) {
           league[index].users = users;
@@ -385,12 +442,14 @@ const init = () => {
           league.push({ difficulty, users });
         }
         localStorage.setItem("USERS", JSON.stringify(league));
-        generateLB(users);
+        generateLB(users, oldRecord);
       } else {
+        user.rank = users.length + 1;
+        user.formerRank = user.rank;
         users.push(user);
         league.push({ difficulty, users });
         localStorage.setItem("USERS", JSON.stringify(league));
-        generateLB(users);
+        generateLB(users, oldRecord);
       }
     } else {
       timeElapsed += 1;

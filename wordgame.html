@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WordBeater</title>
+    <link rel="stylesheet" href="./styles/fontawesome.min.css" />
+    <link rel="stylesheet" href="./styles/bootstrap.min.css" />
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -12,7 +14,7 @@
       src="https://kit.fontawesome.com/28dabda529.js"
       crossorigin="anonymous"
     ></script>
-    <link rel="stylesheet" href="./wordgame.css" />
+    <link rel="stylesheet" href="./styles/wordgame.css" />
   </head>
   <body class=" bg-dark">
     <div class="overlay user-input d-none">
@@ -44,12 +46,14 @@
               />
             </div>
             <h3 class="text-center">LeaderBoards</h3>
-            <table class="table table-striped text-center text-light mb-5">
+            <h5 class="tierLabel text-center">Easy - Tier</h5>
+            <table
+              class="table table-striped text-center text-light mb-5"
+              style="empty-cells: show;"
+            >
               <thead>
                 <tr>
-                  <!-- <th>
-                    id
-                  </th> -->
+                  <th></th>
                   <th>
                     rank
                   </th>
@@ -82,6 +86,9 @@
           <div class="col-md-6 mx-auto text-left leaderboard-reset">
             <button class="btn btn-danger">reset score</button>
           </div>
+        </div>
+        <div class="row text-center text-uppercase">
+          <div class="col-md-6 mx-auto remarkLabel"></div>
         </div>
       </div>
     </div>
