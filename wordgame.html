@@ -16,7 +16,7 @@
     ></script>
     <link rel="stylesheet" href="./styles/wordgame.css" />
   </head>
-  <body class=" bg-dark">
+  <body class="bg-dark">
     <div class="overlay user-input d-none">
       <div
         class="container h-100 d-flex justify-content-center align-items-center flex-column"
@@ -36,7 +36,7 @@
     <div class="overlay leaderboard d-none">
       <div class="container">
         <div class="row mt-5">
-          <div class="col-md-8 mx-auto">
+          <div class="col-md-8 col-sm-12 mx-auto">
             <div class="text-center">
               <img
                 src="./images/leaderboard.png"
@@ -78,12 +78,12 @@
           </div>
         </div>
         <div class="row mb-5">
-          <div class="col-md-6 mx-auto text-right">
+          <div class="col-6 mx-auto text-right">
             <button class="btn btn-success leaderboard-continue">
               continue
             </button>
           </div>
-          <div class="col-md-6 mx-auto text-left leaderboard-reset">
+          <div class="col-6 mx-auto text-left leaderboard-reset">
             <button class="btn btn-danger">reset score</button>
           </div>
         </div>
@@ -92,20 +92,20 @@
         </div>
       </div>
     </div>
-    <div class="row bg-danger mb-5 mx-auto">
+    <div class="row bg-danger mb-sm-0 mb-md-5 mx-auto">
       <div class="col-md-6 mx-auto">
         <h2 class="text-center py-3">WordBeater</h2>
       </div>
     </div>
     <!-- sidebar options -->
-    <div class="options position-absolute">
+    <div class="options">
       <div class="leaderboard-icon" title="leaderboard">
         <i class="fas fa-medal"></i>
       </div>
       <div class="settings-icon position-relative" title="settings">
         <i class="fas fa-cog"></i>
       </div>
-      <div class="position-absolute settings-menu">
+      <div class="settings-menu">
         <div>
           Difficulty:
         </div>
@@ -169,7 +169,7 @@
             id="input-text"
             disabled
           />
-          <div class="text-center mt-3" id="message">press start to play!</div>
+          <h2 class="text-center mt-3" id="message">press start to play!</h2>
           <div class="row mt-5">
             <div class="col-md-6">
               <p class="text-center">

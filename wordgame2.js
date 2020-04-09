@@ -174,6 +174,7 @@ lbReset.addEventListener("click", () => {});
 
 startButton.addEventListener("click", () => {
   inputOverlay.classList.remove("d-none");
+  uname.focus();
 });
 
 const renderTimeMeter = (availableTime, totaltime) => {
@@ -304,7 +305,7 @@ const getTime = () => {
 };
 
 const MatchWord = (wordTomatchAgainst, typedword) => {
-  if (wordTomatchAgainst === typedword) return true;
+  if (wordTomatchAgainst.toLowerCase() === typedword.toLowerCase()) return true;
   return false;
 };
 
@@ -430,7 +431,7 @@ const init = () => {
               else if (user.rank > user.formerRank) user.ladder = "demoted";
               else if (user.rank === user.formerRank) user.ladder = "neutral";
             } else {
-              user.ladder = "neutral";
+              user.ladder = "promoted";
             }
             return user;
           });
